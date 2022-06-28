@@ -1,0 +1,17 @@
+title SPA new note
+
+note over selain:
+Käyttäjä painaa save-nappia
+Selain tallentaa noten listaan,
+näyttää noten ja
+lähettää sen palvelimelle
+end note 
+
+selain -> palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa, json sisälönä viesti ja aikaleima
+
+note over palvelin:
+palvelin käsittelee 
+lähetetyn noten
+end note
+
+palvelin --> selain: 201 CREATED, message: "note created"

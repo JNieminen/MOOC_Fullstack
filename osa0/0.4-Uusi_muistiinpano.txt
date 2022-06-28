@@ -1,0 +1,40 @@
+Title New note
+
+selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
+
+note over palvelin:
+palvelin tallentaa uuden
+muistiinpanon tietokantaan
+ja lähettää uudelleenohjauspyynnön
+end note
+
+palvelin-->selain: 302 REDIRECT /exampleapp/notes
+
+note over selain:
+uudelleenohjauksen jälkeen toimitaan
+samalla lailla kuin ensimmäistä 
+kertaa sivulle tullessa
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+palvelin-->selain: 200 OK HTML koodi
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+palvelin-->selain: 200 OK main.css
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+palvelin-->selain: 200 OK main.js
+
+note over selain:
+selain alkaa suorittaa js-koodia
+joka pyytää JSON-datan palvelimelta
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+palvelin-->selain: 200 OK [{"content":"iuytreza","date":"2022-06-28T08:51:20.979Z"}, ...]
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/favicon.ico
+palvelin-->selain: 200 OK favicon.ico
+
+note over selain:
+selain suorittaa tapahtumankäsittelijän
+joka renderöi muistiinpanot näytölle
+end note
+
