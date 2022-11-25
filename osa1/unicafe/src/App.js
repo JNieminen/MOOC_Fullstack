@@ -17,8 +17,9 @@ const Statistics = (props) => {
   let positive = good / all
 
   if (all === 0) {
-    average = 0
-    positive = 0
+    return (
+      <div>No feedback given</div>
+    )
   }
 
   return (
