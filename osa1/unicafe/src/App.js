@@ -8,11 +8,31 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick} > {text} </button>
 )
 
-const Stat = ({ text, value }) => (
-  <>
-    {text} {value}<br />
-  </>
-)
+const Statistics = (props) => {
+  const good = parseInt(props.good)
+  const neutral = parseInt(props.neutral)
+  const bad = parseInt(props.bad)
+  const all = good + neutral + bad
+  let average = (good - bad) / all // good = 1, neutral = 0, bad = -1
+  let positive = good / all
+
+  if (all === 0) {
+    average = 0
+    positive = 0
+  }
+
+  return (
+    <div>
+      good {good} <br />
+      neutral {neutral} <br />
+      bad {bad} <br />
+      all {all} <br />
+      average {average} <br />
+      positive {positive} <br />
+    </div>
+  )
+
+}
 
 
 
@@ -33,9 +53,7 @@ const App = () => {
       <Button handleClick={handleNeutralClick} text='neutral' />
       <Button handleClick={handleBadClick} text='bad' />
       <Title text='Statistics' />
-      <Stat text='good' value={good} />
-      <Stat text='neutral' value={neutral} />
-      <Stat text='bad' value={bad} />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
 }
