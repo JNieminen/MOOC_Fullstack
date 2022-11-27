@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Person = ({ person }) => (<>{person.name} {person.number}<br /></>)
 
@@ -33,18 +34,30 @@ const PersonForm = (props) => (
 )
 
 const App = () => {
-  const debugData = [
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' },
-    { name: 'Terry Gilliam', number: '44-01-798466' }
-  ]
-  const [persons, setPersons] = useState(debugData) // debug set
-  // const [persons, setPersons] = useState([]) // empty set
+  // const debugData = [
+  //   { name: 'Arto Hellas', number: '040-123456' },
+  //   { name: 'Ada Lovelace', number: '39-44-5323523' },
+  //   { name: 'Dan Abramov', number: '12-43-234345' },
+  //   { name: 'Mary Poppendieck', number: '39-23-6423122' },
+  //   { name: 'Terry Gilliam', number: '44-01-798466' }
+  // ]
+
+  // const [persons, setPersons] = useState(debugData) // debug set
+  const [persons, setPersons] = useState([]) // empty set
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+  useEffect(() => {
+    //console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        //console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }, [])
+  //console.log('render', persons.length, 'notes')
 
   const addName = (event) => {
     event.preventDefault()
