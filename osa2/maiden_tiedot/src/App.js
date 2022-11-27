@@ -7,11 +7,11 @@ const Filter = ({ changeHandler, filter }) => (
   </div>
 )
 
-const Country = ({ country }) => (
-  <>{country.name.common}<br /></>
+const Country = ({ country, buttonHandler }) => (
+  <>{country.name.common} <button onClick={buttonHandler} id={country.name.common}>show</button><br /></>
 )
 
-const Countries = ({ countries }) => {
+const Countries = ({ countries, buttonHandler }) => {
   if (countries.length > 10) {
     return (<>Too many matches, specify another filter</>)
   }
@@ -19,7 +19,9 @@ const Countries = ({ countries }) => {
   if (countries.length > 1) {
     return (
       <div>
-        {countries.map(country => <Country key={country.name.common} country={country} />)}
+        {countries.map(country => <Country key={country.name.common}
+          country={country}
+          buttonHandler={buttonHandler} />)}
       </div>
     )
   }
@@ -59,6 +61,12 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const buttonHandler = (event) => {
+    event.preventDefault()
+    //console.log(event.target.id)
+    setFilter(event.target.id)
+  }
+
   const nameContainsFilter = (name, filter) => (
     name.toLowerCase().includes(filter.toLowerCase())
   )
@@ -70,7 +78,7 @@ const App = () => {
   return (
     <div>
       <Filter changeHandler={handleFilterChange} filter={filter} />
-      <Countries countries={countriesToShow} />
+      <Countries countries={countriesToShow} buttonHandler={buttonHandler} />
     </div>
   )
 }
