@@ -8,7 +8,55 @@ const Filter = ({ changeHandler, filter }) => (
 )
 
 const Country = ({ country, buttonHandler }) => (
-  <>{country.name.common} <button onClick={buttonHandler} id={country.name.common}>show</button><br /></>
+  <>{country.name.common} <button onClick={buttonHandler}
+    value={'^' + country.name.common + '$'}>show</button><br /></>
+)
+
+const Weather = ({ city }) => {
+  // temperature, weather icon, windspeed
+  // Note: Free plan on openweathermap has limit of 60 calls per minute
+  const [weather, setWeather] = useState(null)
+
+  const api_key = process.env.REACT_APP_API_KEY
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api_key}`
+
+  useEffect(() => {
+    axios
+      .get(url)
+      .then(response => {
+        setWeather(response.data)
+      })
+  }, [url])
+
+  //console.log(weather) what does the response look like from openweathermap
+
+  if (weather) { // don't use the date before we have it!
+    return (
+      <div>
+        <h3>Weather in {city}</h3>
+        temperature {(parseFloat(weather.main.temp) - 273.15).toFixed(2)} Celsius<br />
+        <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].description}></img><br />
+        wind {weather.wind.speed} m/s < br />
+      </div >
+    )
+  }
+
+}
+
+const CountryDetails = ({ country }) => (
+  // name (h2), capital, area, languages(h4) (ul), flag
+  <div>
+    <h2>{country.name.common}</h2>
+    capital {country.capital}<br />
+    area {country.area}<br />
+    <h4>languages:</h4>
+    <ul>
+      {Object.values(country.languages).map(language => <li key={language}>{language}</li>)}
+    </ul>
+    <img src={country.flags.png} alt='country flag'></img>
+    <Weather city={country.capital[0]} />
+  </div >
+
 )
 
 const Countries = ({ countries, buttonHandler }) => {
@@ -27,19 +75,8 @@ const Countries = ({ countries, buttonHandler }) => {
   }
 
   if (countries.length === 1) {
-    // name (h2), capital, area, languages(h4) (ul), flag
-    const country = countries[0]
     return (
-      <div>
-        <h2>{country.name.common}</h2>
-        capital {country.capital}<br />
-        area {country.area}<br />
-        <h4>languages:</h4>
-        <ul>
-          {Object.values(country.languages).map(language => <li key={language}>{language}</li>)}
-        </ul>
-        <img src={country.flags.png} alt='country flag'></img>
-      </div >
+      <CountryDetails country={countries[0]} />
     )
   }
 }
@@ -62,14 +99,15 @@ const App = () => {
   }
 
   const buttonHandler = (event) => {
-    event.preventDefault()
     //console.log(event.target.id)
-    setFilter(event.target.id)
+    setFilter(event.target.value)
   }
 
-  const nameContainsFilter = (name, filter) => (
-    name.toLowerCase().includes(filter.toLowerCase())
-  )
+  const nameContainsFilter = (name, filter) => {
+    const re = new RegExp(filter, 'i')
+    return re.test(name)
+    // return name.toLowerCase().includes(filter.toLowerCase())
+  }
 
   const countriesToShow = (filter.length === 0)
     ? countries
