@@ -35,7 +35,26 @@ const App = () => {
           setNewNumber('')
         })
     } else {
-      window.alert(`${newName} is already added to phonebook`)
+      const korvaa = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (korvaa) {
+        const person = persons.find(p => p.name === newName)
+        const changedPerson = { ...person, number: newNumber }
+        const id = changedPerson.id
+
+        personService
+          .update(id, changedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(error => {
+            alert(
+              `${newName} was already deleted from server`
+            )
+            setPersons(persons.filter(p => p.id !== id))
+          })
+      }
     }
   }
 
