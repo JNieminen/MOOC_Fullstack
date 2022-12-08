@@ -1,36 +1,11 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-
-const Person = ({ person }) => (<>{person.name} {person.number}<br /></>)
-
-const Persons = ({ persons }) => (
-  <div>
-    {persons.map(person =>
-      <Person key={person.name} person={person} />)
-    }
-  </div>
-)
+import personService from './services/persons'
+import { Persons, PersonForm } from './components/Person'
 
 const Filter = ({ changeHandler, filter }) => (
   <div>filter shown with <input value={filter}
     onChange={changeHandler} />
   </div>
-)
-
-const PersonForm = (props) => (
-  <form onSubmit={props.addName}>
-    <div>
-      name: <input value={props.newName}
-        onChange={props.handleNameChange} />
-    </div>
-    <div>
-      number: <input value={props.newNumber}
-        onChange={props.handleNumberChange} />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
 )
 
 const App = () => {
@@ -50,22 +25,25 @@ const App = () => {
 
   useEffect(() => {
     //console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        //console.log('promise fulfilled')
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
-  //console.log('render', persons.length, 'notes')
 
   const addName = (event) => {
     event.preventDefault()
     if (!persons.some(persons => persons.name === newName)) {
       const personObject = { name: newName, number: newNumber }
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
+
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     } else {
       window.alert(`${newName} is already added to phonebook`)
     }
