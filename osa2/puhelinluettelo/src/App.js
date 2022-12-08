@@ -9,22 +9,12 @@ const Filter = ({ changeHandler, filter }) => (
 )
 
 const App = () => {
-  // const debugData = [
-  //   { name: 'Arto Hellas', number: '040-123456' },
-  //   { name: 'Ada Lovelace', number: '39-44-5323523' },
-  //   { name: 'Dan Abramov', number: '12-43-234345' },
-  //   { name: 'Mary Poppendieck', number: '39-23-6423122' },
-  //   { name: 'Terry Gilliam', number: '44-01-798466' }
-  // ]
-
-  // const [persons, setPersons] = useState(debugData) // debug set
-  const [persons, setPersons] = useState([]) // empty set
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    //console.log('effect')
     personService
       .getAll()
       .then(initialPersons => {
@@ -49,6 +39,17 @@ const App = () => {
     }
   }
 
+  const deleteName = (event) => {
+    const poista = window.confirm(`Delete ${event.target.value}`)
+    if (poista) {
+      personService
+        .deleteName(event.target.id)
+        .then(
+          setPersons(persons.filter(person => { return person.id !== parseInt(event.target.id) }))
+        )
+    }
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -69,7 +70,6 @@ const App = () => {
     ? persons
     : persons.filter(person => nameContainsFilter(person.name, filter))
 
-  //console.log(persons)
   return (
     <div>
       <h2>Phonebook</h2>
@@ -83,7 +83,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons persons={showPersons} />
+      <Persons persons={showPersons} buttonHandler={deleteName} />
     </div>
   )
 

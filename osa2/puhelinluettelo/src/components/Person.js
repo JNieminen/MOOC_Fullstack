@@ -1,9 +1,16 @@
-const Person = ({ person }) => (<>{person.name} {person.number}<br /></>)
+const Person = ({ person, buttonHandler }) => (
+    <>
+        {person.name} {person.number}&nbsp;
+        <button value={person.name} id={person.id} onClick={buttonHandler}>
+            delete
+        </button><br />
+    </>
+)
 
-const Persons = ({ persons }) => (
+const Persons = ({ persons, buttonHandler }) => (
     <div>
         {persons.map(person =>
-            <Person key={person.name} person={person} />)
+            <Person key={person.id} person={person} buttonHandler={buttonHandler} />)
         }
     </div>
 )
