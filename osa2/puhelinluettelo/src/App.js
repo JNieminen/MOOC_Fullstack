@@ -8,11 +8,40 @@ const Filter = ({ changeHandler, filter }) => (
   </div>
 )
 
+const ErrorMessage = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='error'>
+      {message}
+    </div>
+  )
+}
+
+const Notification = ({ message }) => {
+  // Might have worked by passing an array or dict with message and style in it to use only one component
+  // instead of two (Notification and ErrorMessage).
+  // No clue if that is a good practice or not....
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='notification'>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -33,7 +62,17 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+
+          setNotification(
+            `Added ${returnedPerson.name}`
+          )
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000)
+
         })
+
+
     } else {
       const korvaa = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
       if (korvaa) {
@@ -47,11 +86,22 @@ const App = () => {
             setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
             setNewName('')
             setNewNumber('')
+
+            setNotification(
+              `Number replaced for ${returnedPerson.name}`
+            )
+            setTimeout(() => {
+              setNotification(null)
+            }, 3000)
+
           })
           .catch(error => {
-            alert(
-              `${newName} was already deleted from server`
+            setErrorMessage(
+              `Information of ${newName} was already been removed from server`
             )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 3000)
             setPersons(persons.filter(p => p.id !== id))
           })
       }
@@ -63,9 +113,20 @@ const App = () => {
     if (poista) {
       personService
         .deleteName(event.target.id)
-        .then(
-          setPersons(persons.filter(person => { return person.id !== parseInt(event.target.id) }))
-        )
+        .then(returnedData => {
+          setPersons(
+            persons.filter(person => {
+              return person.id !== parseInt(event.target.id)
+            }))
+
+          setNotification(
+            `Removed ${event.target.value}`
+          )
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000)
+
+        })
     }
   }
 
@@ -92,6 +153,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <ErrorMessage message={errorMessage} />
+      <Notification message={notification} />
       <Filter changeHandler={handleFilterChange} filter={filter} />
       <h3>Add a new</h3>
       <PersonForm
